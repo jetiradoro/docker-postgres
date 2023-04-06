@@ -1,0 +1,37 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres
+    container_name: ${DOCKER_CONTAINER_NAME}-db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_PORT}:5432
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    networks:
+      - docker-net
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    container_name:  ${DOCKER_CONTAINER_NAME}-admin
+    env_file:
+      - .env
+    volumes:
+      - ./pgadmin:/var/lib/pgadmin
+    environment:
+      - VIRTUAL_HOST=${PGADMIN_VIRTUAL_HOST}
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_EMAIL}
+    networks:
+      - docker-net
+networks:
+  docker-net:
+    external: ${DOCKER_NET_EXTERNAL}
